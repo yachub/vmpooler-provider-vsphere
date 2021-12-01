@@ -1,10 +1,10 @@
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'vmpooler-vsphere-provider/version'
+require 'vmpooler-provider-vsphere/version'
 
 Gem::Specification.new do |s|
-  s.name          = 'vmpooler-vsphere-provider'
-  s.version       = VmpoolerVsphereProvider::VERSION
+  s.name          = 'vmpooler-provider-vsphere'
+  s.version       = VmpoolerProviderVsphere::VERSION
   s.authors       = ['Puppet']
   s.email         = ['support@puppet.com']
 

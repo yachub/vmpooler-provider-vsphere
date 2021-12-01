@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    vmpooler-vsphere-provider (1.3.0)
+    vmpooler-provider-vsphere (1.3.0)
       rbvmomi (>= 2.1, < 4.0)
 
 GEM
@@ -35,9 +35,11 @@ GEM
     faraday-net_http_persistent (1.2.0)
     faraday-patron (1.0.0)
     faraday-rack (1.0.0)
+    ffi (1.15.4-java)
     google-cloud-env (1.5.0)
       faraday (>= 0.17.3, < 2.0)
     json (2.6.1)
+    json (2.6.1-java)
     method_source (1.0.0)
     mock_redis (0.29.0)
       ruby2_keywords
@@ -46,6 +48,9 @@ GEM
       ruby2_keywords (~> 0.0.1)
     net-ldap (0.17.0)
     nio4r (2.5.8)
+    nio4r (2.5.8-java)
+    nokogiri (1.12.5-java)
+      racc (~> 1.4)
     nokogiri (1.12.5-x86_64-linux)
       racc (~> 1.4)
     opentelemetry-api (0.17.0)
@@ -84,9 +89,16 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    pry (0.14.1-java)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+      spoon (~> 0.0)
     puma (5.5.2)
       nio4r (~> 2.0)
+    puma (5.5.2-java)
+      nio4r (~> 2.0)
     racc (1.6.0)
+    racc (1.6.0-java)
     rack (2.2.3)
     rack-protection (2.1.0)
       rack
@@ -141,6 +153,8 @@ GEM
       tilt (~> 2.0)
     spicy-proton (2.1.13)
       bindata (~> 2.3)
+    spoon (0.0.6)
+      ffi
     statsd-ruby (1.5.0)
     thor (1.1.0)
     thrift (0.15.0)
@@ -172,6 +186,7 @@ GEM
       rspec (~> 3)
 
 PLATFORMS
+  universal-java-11
   x86_64-linux
 
 DEPENDENCIES
@@ -184,7 +199,7 @@ DEPENDENCIES
   simplecov (>= 0.11.2)
   thor (~> 1.0, >= 1.0.1)
   vmpooler (~> 1.3, >= 1.3.0)
-  vmpooler-vsphere-provider!
+  vmpooler-provider-vsphere!
   yarjuf (>= 2.0)
 
 BUNDLED WITH
