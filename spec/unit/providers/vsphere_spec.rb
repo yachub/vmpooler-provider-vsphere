@@ -104,36 +104,36 @@ EOT
     let(:other_folder) { 'folder2' }
     let(:base_folder) { 'dc1/vm/base' }
     let(:configured_folders) { { folder_title => base_folder } }
-    let(:whitelist) { nil }
+    let(:allowlist) { nil }
     it 'should return true when configured_folders includes the folder_title' do
-      expect(subject.folder_configured?(folder_title, base_folder, configured_folders, whitelist)).to be true
+      expect(subject.folder_configured?(folder_title, base_folder, configured_folders, allowlist)).to be true
     end
 
     it 'should return false when title is not in configured_folders' do
-      expect(subject.folder_configured?(other_folder, base_folder, configured_folders, whitelist)).to be false
+      expect(subject.folder_configured?(other_folder, base_folder, configured_folders, allowlist)).to be false
     end
 
     context 'with another base folder' do
       let(:base_folder) { 'dc2/vm/base' }
       let(:configured_folders) { { folder_title => 'dc1/vm/base' } }
       it 'should return false' do
-        expect(subject.folder_configured?(folder_title, base_folder, configured_folders, whitelist)).to be false
+        expect(subject.folder_configured?(folder_title, base_folder, configured_folders, allowlist)).to be false
       end
     end
 
-    context 'with a whitelist set' do
-      let(:whitelist) { [ other_folder ] }
+    context 'with a allowlist set' do
+      let(:allowlist) { [ other_folder ] }
       it 'should return true' do
-        expect(subject.folder_configured?(other_folder, base_folder, configured_folders, whitelist)).to be true
+        expect(subject.folder_configured?(other_folder, base_folder, configured_folders, allowlist)).to be true
       end
     end
 
-    context 'with string whitelist value' do
-      let(:whitelist) { 'whitelist' }
+    context 'with string allowlist value' do
+      let(:allowlist) { 'allowlist' }
       it 'should raise an error' do
-        expect(whitelist).to receive(:include?).and_raise('mockerror')
+        expect(allowlist).to receive(:include?).and_raise('mockerror')
 
-        expect{ subject.folder_configured?(other_folder, base_folder, configured_folders, whitelist) }.to raise_error(RuntimeError, 'mockerror')
+        expect{ subject.folder_configured?(other_folder, base_folder, configured_folders, allowlist) }.to raise_error(RuntimeError, 'mockerror')
       end
     end
   end
@@ -297,12 +297,61 @@ EOT
     end
   end
 
-  describe '#purge_unconfigured_folders' do
+  describe '#pool_folders' do
+    let(:pool) { 'pool1' }
+    let(:folder_name) { 'myinstance' }
+    let(:folder_base) { 'vmpooler' }
+    let(:folder) { [folder_base,folder_name].join('/') }
+    let(:datacenter) { 'dc1' }
+    let(:provider_name) { 'mock_provider' }
+    let(:expected_response) {
+      {
+        folder_name => "#{datacenter}/vm/#{folder_base}"
+      }
+    }
+    context 'when evaluating pool folders' do
+      before do
+        expect(subject).not_to be_nil
+        #replace top-level global config
+        $config = YAML.load(<<-EOT
+---
+:providers:
+  :mock:
+:pools:
+  - name: '#{pool}'
+    folder: '#{folder}'
+    size: 1
+    datacenter: '#{datacenter}'
+    provider: '#{provider_name}'
+  - name: '#{pool}2'
+    folder: '#{folder}'
+    size: 1
+    datacenter: '#{datacenter}'
+    provider: '#{provider_name}2'
+        EOT
+        )
+      end
+
+      it 'should return a list of pool folders' do
+        expect(subject).to receive(:get_target_datacenter_from_config).with(pool).and_return(datacenter)
+
+        expect(subject.pool_folders(provider_name)).to eq(expected_response)
+      end
+
+      it 'should raise an error when the provider fails to get the datacenter' do
+        expect(subject).to receive(:get_target_datacenter_from_config).with(pool).and_raise('mockerror')
+
+        expect{ subject.pool_folders(provider_name) }.to raise_error(RuntimeError, 'mockerror')
+      end
+    end
+  end
+
+  describe '#purge_unconfigured_resources' do
     let(:folder_title) { 'folder1' }
     let(:base_folder) { 'dc1/vm/base' }
     let(:folder_object) { mock_RbVmomi_VIM_Folder({ :name => base_folder }) }
     let(:child_folder) { mock_RbVmomi_VIM_Folder({ :name => folder_title }) }
-    let(:whitelist) { nil }
+    let(:allowlist) { nil }
     let(:base_folders) { [ base_folder ] }
     let(:configured_folders) { { folder_title => base_folder } }
     let(:folder_children) { [ folder_title => child_folder ] }
@@ -310,6 +359,7 @@ EOT
 
     before(:each) do
       allow(subject).to receive(:connect_to_vsphere).and_return(connection)
+      allow(subject).to receive(:pool_folders).and_return(configured_folders)
     end
 
     context 'with an empty folder' do
@@ -317,7 +367,7 @@ EOT
         expect(subject).to receive(:get_folder_children).with(base_folder, connection).and_return(empty_list)
         expect(subject).to_not receive(:destroy_folder_and_children)
 
-        subject.purge_unconfigured_folders(base_folders, configured_folders, whitelist)
+        subject.purge_unconfigured_resources(allowlist)
       end
     end
 
@@ -325,7 +375,7 @@ EOT
       expect(subject).to receive(:get_folder_children).with(base_folder, connection).and_return(folder_children)
       allow(subject).to receive(:folder_configured?).and_return(true)
 
-      subject.purge_unconfigured_folders(base_folders, configured_folders, whitelist)
+      subject.purge_unconfigured_resources(allowlist)
     end
 
     context 'with a folder that is not configured' do
@@ -337,14 +387,14 @@ EOT
       it 'should destroy the folder and children' do
         expect(subject).to receive(:destroy_folder_and_children).with(child_folder).and_return(nil)
 
-        subject.purge_unconfigured_folders(base_folders, configured_folders, whitelist)
+        subject.purge_unconfigured_resources(allowlist)
       end
     end
 
     it 'should raise any errors' do
       expect(subject).to receive(:get_folder_children).and_throw('mockerror')
 
-      expect{ subject.purge_unconfigured_folders(base_folders, configured_folders, whitelist) }.to raise_error(/mockerror/)
+      expect{ subject.purge_unconfigured_resources(allowlist) }.to raise_error(/mockerror/)
     end
   end
 
