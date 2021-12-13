@@ -51,8 +51,8 @@ module Vmpooler
           'vsphere'
         end
 
-        def folder_configured?(folder_title, base_folder, configured_folders, whitelist)
-          return true if whitelist&.include?(folder_title)
+        def folder_configured?(folder_title, base_folder, configured_folders, allowlist)
+          return true if allowlist&.include?(folder_title)
           return false unless configured_folders.keys.include?(folder_title)
           return false unless configured_folders[folder_title] == base_folder
 
@@ -119,7 +119,30 @@ module Vmpooler
           try >= max_tries ? raise : retry
         end
 
-        def purge_unconfigured_folders(base_folders, configured_folders, whitelist)
+        # Return a list of pool folders
+        def pool_folders(provider_name)
+          folders = {}
+          $config[:pools].each do |pool|
+            next unless pool['provider'] == provider_name.to_s
+
+            folder_parts = pool['folder'].split('/')
+            datacenter = get_target_datacenter_from_config(pool['name'])
+            folders[folder_parts.pop] = "#{datacenter}/vm/#{folder_parts.join('/')}"
+          end
+          folders
+        end
+
+        def get_base_folders(folders)
+          base = []
+          folders.each do |_key, value|
+            base << value
+          end
+          base.uniq
+        end
+
+        def purge_unconfigured_resources(allowlist)
+          configured_folders = pool_folders(name)
+          base_folders = get_base_folders(configured_folders)
           @connection_pool.with_metrics do |pool_object|
             connection = ensured_vsphere_connection(pool_object)
 
@@ -129,7 +152,7 @@ module Vmpooler
 
               folder_children.each do |folder_hash|
                 folder_hash.each do |folder_title, folder_object|
-                  destroy_folder_and_children(folder_object) unless folder_configured?(folder_title, base_folder, configured_folders, whitelist)
+                  destroy_folder_and_children(folder_object) unless folder_configured?(folder_title, base_folder, configured_folders, allowlist)
                 end
               end
             end

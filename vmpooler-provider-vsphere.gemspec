@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.add_dependency 'rbvmomi', '>= 2.1', '< 4.0'
   
-  s.add_development_dependency 'vmpooler', '~> 2.0'
+  s.add_development_dependency 'vmpooler', '~> 2.1' # renaming done in version 2.1
 
   # Testing dependencies
   s.add_development_dependency 'climate_control', '>= 0.2.0'
