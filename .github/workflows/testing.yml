@@ -19,6 +19,7 @@ jobs:
       matrix:
         ruby-version:
           - 'jruby-9.3.6.0'
+          - 'jruby-9.4.0.0'
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
@@ -35,6 +36,7 @@ jobs:
       matrix:
         ruby-version:
           - 'jruby-9.3.6.0'
+          - 'jruby-9.4.0.0'
     steps:
     - uses: actions/checkout@v2
     - name: Set up Ruby
