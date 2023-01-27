@@ -3,6 +3,7 @@
 - [vmpooler-provider-vsphere](#vmpooler-provider-vsphere)
   - [Usage](#usage)
     - [Custom VM Config Attribute](#custom-vm-config-attribute)
+  - [Update the Gemfile Lock](#update-the-gemfile-lock)
   - [Releasing](#releasing)
   - [License](#license)
 
@@ -22,6 +23,12 @@ macOS: `"/Library/Application Support/VMware Tools/vmware-tools-daemon" --cmd "i
 Linux or Windows Guest: `vmtoolsd --cmd "info-get guestinfo.hostname"`
 
 See the [VMware Tools Administration docs](https://docs.vmware.com/en/VMware-Tools/12.1.0/com.vmware.vsphere.vmwaretools.doc/GUID-D026777B-606D-4442-957A-B953C2049659.html) for more information about querying information from the GuestInfo variable.
+
+## Update the Gemfile Lock
+
+To update the `Gemfile.lock` run `./update-gemfile-lock`.
+
+Verify, and update if needed, that the docker tag in the script and GitHub action workflows matches what is used in the [vmpooler-deployment Dockerfile](https://github.com/puppetlabs/vmpooler-deployment/blob/main/docker/Dockerfile).
 
 ## Releasing
 
