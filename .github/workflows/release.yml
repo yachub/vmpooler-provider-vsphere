@@ -1,4 +1,4 @@
-name: Release
+name: Release Gem
 
 on: workflow_dispatch
 
@@ -11,7 +11,9 @@ jobs:
       - name: Get Version
         id: gv
         run: |
-          echo "::set-output name=ver::$(grep VERSION lib/vmpooler-provider-vsphere/version.rb |rev |cut -d "'" -f2 |rev)"
+          ver=$(grep VERSION lib/vmpooler-provider-vsphere/version.rb |rev |cut -d "'" -f2 |rev)
+          echo "ver=$ver" >> $GITHUB_OUTPUT
+          echo "Found version $ver from lib/vmpooler-provider-vsphere/version.rb"
       - name: Tag Release
         uses: ncipollo/release-action@v1
         with:
