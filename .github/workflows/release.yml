@@ -20,7 +20,7 @@ jobs:
         uses: docker://githubchangeloggenerator/github-changelog-generator:1.16.2
         with:
           args: >-
-            --future-release ${{ steps.nv.outputs.version }}
+            --future-release ${{ steps.gv.outputs.version }}
         env:
           CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -33,7 +33,7 @@ jobs:
             echo
             echo "The following changes were detected:"
             git --no-pager diff
-            echo "Uncommitted PRs found in the changelog. Please submit a release prep PR of changes after running 'docker run -it --rm -e CHANGELOG_GITHUB_TOKEN -v "\$\(pwd\)":/usr/local/src/your-app githubchangeloggenerator/github-changelog-generator:1.16.2 github_changelog_generator --future-release ${{ steps.nv.outputs.version }}'"
+            echo "Uncommitted PRs found in the changelog. Please submit a release prep PR of changes after running `./update-changelog`"
             exit 1
           fi
 
@@ -42,7 +42,7 @@ jobs:
         with:
           args: >-
             --since-tag ${{ steps.cv.outputs.result }}
-            --future-release ${{ steps.nv.outputs.version }}
+            --future-release ${{ steps.gv.outputs.version }}
             --output release-notes.md
         env:
           CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
       - name: Tag Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.nv.outputs.version }}
+          tag: ${{ steps.gv.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyfile: release-notes.md
           draft: false
