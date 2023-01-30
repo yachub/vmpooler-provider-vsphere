@@ -1,11 +1,20 @@
 # Changelog
 
-## [Unreleased](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/HEAD)
+## [2.0.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/2.0.0) (2023-01-30)
 
-[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/1.6.0...HEAD)
+[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/1.6.0...2.0.0)
+
+**Implemented enhancements:**
+
+- Migrate to rbvmomi2 [\#25](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/25) ([yachub](https://github.com/yachub))
+
+**Closed issues:**
+
+- Document Custom VM Attribute [\#23](https://github.com/puppetlabs/vmpooler-provider-vsphere/issues/23)
 
 **Merged pull requests:**
 
+- Fix workflow deprecations, changelog, and add docs [\#24](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/24) ([yachub](https://github.com/yachub))
 - \(RE-15111\) Migrate Snyk to Mend Scanning [\#22](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/22) ([yachub](https://github.com/yachub))
 - \(RE-14811\) Remove DIO as codeowners [\#21](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/21) ([yachub](https://github.com/yachub))
 - Add Snyk action [\#20](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/20) ([yachub](https://github.com/yachub))
