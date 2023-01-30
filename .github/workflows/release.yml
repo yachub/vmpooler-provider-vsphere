@@ -9,8 +9,21 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get Version
-        id: gv
+      - name: Get Current Version
+        uses: actions/github-script@v6
+        id: cv
+        with:
+          script: |
+            const { data: response } = await github.rest.repos.getLatestRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            })
+            console.log(`The latest release is ${response.tag_name}`)
+            return response.tag_name
+          result-encoding: string
+
+      - name: Get Next Version
+        id: nv
         run: |
           version=$(grep VERSION lib/vmpooler-provider-vsphere/version.rb |rev |cut -d "'" -f2 |rev)
           echo "version=$version" >> $GITHUB_OUTPUT
@@ -20,7 +33,7 @@ jobs:
         uses: docker://githubchangeloggenerator/github-changelog-generator:1.16.2
         with:
           args: >-
-            --future-release ${{ steps.gv.outputs.version }}
+            --future-release ${{ steps.nv.outputs.version }}
         env:
           CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -42,7 +55,7 @@ jobs:
         with:
           args: >-
             --since-tag ${{ steps.cv.outputs.result }}
-            --future-release ${{ steps.gv.outputs.version }}
+            --future-release ${{ steps.nv.outputs.version }}
             --output release-notes.md
         env:
           CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +63,7 @@ jobs:
       - name: Tag Release
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ steps.gv.outputs.version }}
+          tag: ${{ steps.nv.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
           bodyfile: release-notes.md
           draft: false
