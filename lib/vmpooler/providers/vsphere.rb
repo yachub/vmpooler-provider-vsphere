@@ -51,6 +51,11 @@ module Vmpooler
           'vsphere'
         end
 
+        def domain(pool_name)
+          dns_plugin_name = pool_config(pool_name)['dns_plugin']
+          return dns_config(dns_plugin_name)
+        end
+
         def folder_configured?(folder_title, base_folder, configured_folders, allowlist)
           return true if allowlist&.include?(folder_title)
           return false unless configured_folders.keys.include?(folder_title)
@@ -565,7 +570,8 @@ module Vmpooler
 
         def vm_ready?(_pool_name, vm_name)
           begin
-            open_socket(vm_name, global_config[:config]['domain'])
+            domain = domain(_pool_name)
+            open_socket(vm_name, domain)
           rescue StandardError => _e
             return false
           end
