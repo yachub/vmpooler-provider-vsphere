@@ -382,9 +382,32 @@ module Vmpooler
               spec: clone_spec
             ).wait_for_completion
 
+            # Make optional?
+            ip = get_vm_ip_address(new_vm_object)
+
+            @redis.with_metrics do |redis|
+              redis.hset("vmpooler__vm__#{new_vmname}", 'ip', ip)
+            end
+
             vm_hash = generate_vm_hash(new_vm_object, pool_name)
           end
           vm_hash
+        end
+
+        # The inner method requires vmware tools running in the guest os
+        def get_vm_ip_address(vm_object, maxloop = 0, loop_delay = 1, max_age = 60)
+          loop_count = 1
+          ip = nil
+          while ip.nil?
+            sleep(loop_delay)
+            ip = vm_object.guest_ip
+            unless maxloop == 0
+              break if loop_count >= maxloop
+
+              loop_count += 1
+            end
+          end
+          return ip
         end
 
         def create_config_spec(vm_name, template_name, extra_config)
