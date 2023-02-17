@@ -387,32 +387,20 @@ module Vmpooler
               spec: clone_spec
             ).wait_for_completion
 
-            # Make optional?
-            ip = get_vm_ip_address(new_vm_object)
-
-            @redis.with_metrics do |redis|
-              redis.hset("vmpooler__vm__#{new_vmname}", 'ip', ip)
-            end
-
             vm_hash = generate_vm_hash(new_vm_object, pool_name)
           end
           vm_hash
         end
 
         # The inner method requires vmware tools running in the guest os
-        def get_vm_ip_address(vm_object, maxloop = 0, loop_delay = 1, max_age = 60)
-          loop_count = 1
-          ip = nil
-          while ip.nil?
-            sleep(loop_delay)
-            ip = vm_object.guest_ip
-            unless maxloop == 0
-              break if loop_count >= maxloop
-
-              loop_count += 1
-            end
+        def get_vm_ip_address(vm_name, pool_name)
+          
+          @connection_pool.with_metrics do |pool_object|
+            connection = ensured_vsphere_connection(pool_object)
+            vm_object = find_vm(pool_name, vm_name, connection)
+            vm_hash = generate_vm_hash(vm_object, pool_name)
+            return vm_hash['ip']
           end
-          return ip
         end
 
         def create_config_spec(vm_name, template_name, extra_config)
@@ -611,13 +599,28 @@ module Vmpooler
           boottime = vm_object.runtime.bootTime if vm_object.runtime&.bootTime
           powerstate = vm_object.runtime.powerState if vm_object.runtime&.powerState
 
+          ip_maxloop = 60
+          ip_loop_delay = 1
+          ip_loop_count = 1
+          ip = nil
+          while ip.nil?
+            sleep(ip_loop_delay)
+            ip = vm_object.guest_ip
+            unless ip_maxloop == 0
+              break if ip_loop_count >= ip_maxloop
+
+              ip_loop_count += 1
+            end
+          end
+
           {
             'name' => vm_object.name,
             'hostname' => hostname,
             'template' => pool_configuration['template'],
             'poolname' => pool_name,
             'boottime' => boottime,
-            'powerstate' => powerstate
+            'powerstate' => powerstate,
+            'ip'         => ip
           }
         end
 
