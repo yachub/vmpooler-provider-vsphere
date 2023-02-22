@@ -198,13 +198,24 @@ MockVirtualDiskManager = Object
 MockVirtualMachine = Struct.new(
   # https://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/vim.VirtualMachine.html
   # From VirtualMachine
-  :config, :runtime, :snapshot, :summary,
+  :config, :runtime, :snapshot, :summary, :guest,
   # From ManagedEntity
   :name,
   # From RbVmomi::VIM::ManagedEntity
   # https://github.com/vmware/rbvmomi/blob/master/lib/rbvmomi/vim/ManagedEntity.rb
   :path
-)
+) do
+  # From RbVmomi::VIM::VirtualMachine
+  # https://github.com/ManageIQ/rbvmomi2/blob/59a5904031a0d7558f306e8d2a05001f9b6822de/lib/rbvmomi/vim/VirtualMachine.rb#L20
+  def guest_ip
+    g = self.guest
+    if g.ipAddress
+      g.ipAddress
+    else
+      nil
+    end
+  end
+end
 
 MockVirtualMachineSnapshot = Struct.new(
   # https://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/vim.vm.Snapshot.html
@@ -345,6 +356,12 @@ MockVirtualMachineGuestSummary = Struct.new(
   # https://www.vmware.com/support/developer/vc-sdk/visdk400pubs/ReferenceGuide/vim.vm.Summary.GuestSummary.html
   # From VirtualMachineGuestSummary
   :hostName
+)
+
+MockVirtualMachineGuestInfo = Struct.new(
+  # https://developer.vmware.com/apis/1311/vsphere
+  # From Data Object - GuestInfo(vim.vm.GuestInfo)
+  :ipAddress
 )
 
 MockVirtualMachineRuntimeInfo = Struct.new(
@@ -801,6 +818,7 @@ end
 def mock_RbVmomi_VIM_VirtualMachine(options = {})
   options[:snapshot_tree] = nil if options[:snapshot_tree].nil?
   options[:name] = 'VM' + rand(65536).to_s if options[:name].nil?
+  options[:ip] = '169.254.255.255' if options[:ip].nil?
   options[:path] = [] if options[:path].nil?
 
   mock = MockVirtualMachine.new()
@@ -810,11 +828,13 @@ def mock_RbVmomi_VIM_VirtualMachine(options = {})
   mock.summary.runtime = MockVirtualMachineRuntimeInfo.new()
   mock.summary.guest = MockVirtualMachineGuestSummary.new()
   mock.runtime = mock.summary.runtime
+  mock.guest = MockVirtualMachineGuestInfo.new()
 
   mock.name = options[:name]
   mock.summary.guest.hostName = options[:hostname]
   mock.runtime.bootTime = options[:boottime]
   mock.runtime.powerState = options[:powerstate]
+  mock.guest.ipAddress = options[:ip]
 
   unless options[:snapshot_tree].nil?
     mock.snapshot = MockVirtualMachineSnapshotInfo.new()
