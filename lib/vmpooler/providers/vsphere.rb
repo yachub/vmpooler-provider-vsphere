@@ -53,7 +53,7 @@ module Vmpooler
 
         def domain(pool_name)
           dns_plugin_name = pool_config(pool_name)['dns_plugin']
-          return dns_config(dns_plugin_name)
+          dns_config(dns_plugin_name)
         end
 
         def folder_configured?(folder_title, base_folder, configured_folders, allowlist)
@@ -394,7 +394,6 @@ module Vmpooler
 
         # The inner method requires vmware tools running in the guest os
         def get_vm_ip_address(vm_name, pool_name)
-          
           @connection_pool.with_metrics do |pool_object|
             connection = ensured_vsphere_connection(pool_object)
             vm_object = find_vm(pool_name, vm_name, connection)
@@ -556,9 +555,9 @@ module Vmpooler
           true
         end
 
-        def vm_ready?(_pool_name, vm_name)
+        def vm_ready?(pool_name, vm_name)
           begin
-            domain = domain(_pool_name)
+            domain = domain(pool_name)
             open_socket(vm_name, domain)
           rescue StandardError => _e
             return false
@@ -620,7 +619,7 @@ module Vmpooler
             'poolname' => pool_name,
             'boottime' => boottime,
             'powerstate' => powerstate,
-            'ip'         => ip
+            'ip' => ip
           }
         end
 
