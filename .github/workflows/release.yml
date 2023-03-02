@@ -73,7 +73,7 @@ jobs:
       - name: Install Ruby jruby-9.3.6.0
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 'jruby-9.3.6.0'
+          ruby-version: 'jruby-9.4.1.0'
 
       - name: Build gem
         run: gem build *.gemspec
