@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.1.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/2.1.0) (2023-03-06)
+
+[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/2.0.0...2.1.0)
+
+**Implemented enhancements:**
+
+- \(RE-15161\) Use timeout builtin to TCPSocket when opening sockets. [\#30](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/30) ([isaac-hammes](https://github.com/isaac-hammes))
+
 ## [2.0.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/2.0.0) (2023-01-30)
 
 [Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/1.6.0...2.0.0)
