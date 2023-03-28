@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files         = Dir[ "lib/**/*" ]
   s.require_paths = ["lib"]
   s.add_dependency 'rbvmomi2', '>= 3.1', '< 4.0'
-  s.add_dependency 'vmpooler', '~> 2.4'
+  s.add_dependency 'vmpooler', '~> 3.0'
 
   # Testing dependencies
   s.add_development_dependency 'climate_control', '>= 0.2.0'
