@@ -51,6 +51,11 @@ module Vmpooler
           'vsphere'
         end
 
+        def domain(pool_name)
+          dns_plugin_name = pool_config(pool_name)['dns_plugin']
+          dns_config(dns_plugin_name)
+        end
+
         def folder_configured?(folder_title, base_folder, configured_folders, allowlist)
           return true if allowlist&.include?(folder_title)
           return false unless configured_folders.keys.include?(folder_title)
@@ -387,6 +392,16 @@ module Vmpooler
           vm_hash
         end
 
+        # The inner method requires vmware tools running in the guest os
+        def get_vm_ip_address(vm_name, pool_name)
+          @connection_pool.with_metrics do |pool_object|
+            connection = ensured_vsphere_connection(pool_object)
+            vm_object = find_vm(pool_name, vm_name, connection)
+            vm_hash = generate_vm_hash(vm_object, pool_name)
+            return vm_hash['ip']
+          end
+        end
+
         def create_config_spec(vm_name, template_name, extra_config)
           RbVmomi::VIM.VirtualMachineConfigSpec(
             annotation: JSON.pretty_generate(
@@ -540,9 +555,10 @@ module Vmpooler
           true
         end
 
-        def vm_ready?(_pool_name, vm_name)
+        def vm_ready?(pool_name, vm_name)
           begin
-            open_socket(vm_name, global_config[:config]['domain'])
+            domain = domain(pool_name)
+            open_socket(vm_name, domain)
           rescue StandardError => _e
             return false
           end
@@ -582,13 +598,28 @@ module Vmpooler
           boottime = vm_object.runtime.bootTime if vm_object.runtime&.bootTime
           powerstate = vm_object.runtime.powerState if vm_object.runtime&.powerState
 
+          ip_maxloop = 60
+          ip_loop_delay = 1
+          ip_loop_count = 1
+          ip = nil
+          while ip.nil?
+            sleep(ip_loop_delay)
+            ip = vm_object.guest_ip
+            unless ip_maxloop == 0
+              break if ip_loop_count >= ip_maxloop
+
+              ip_loop_count += 1
+            end
+          end
+
           {
             'name' => vm_object.name,
             'hostname' => hostname,
             'template' => pool_configuration['template'],
             'poolname' => pool_name,
             'boottime' => boottime,
-            'powerstate' => powerstate
+            'powerstate' => powerstate,
+            'ip' => ip
           }
         end
 

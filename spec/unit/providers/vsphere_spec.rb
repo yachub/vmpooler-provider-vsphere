@@ -50,6 +50,11 @@ describe 'Vmpooler::PoolManager::Provider::VSphere' do
 :config:
   max_tries: 3
   retry_factor: 10
+:dns_configs:
+  :gcp-clouddns:
+    project: vmpooler-test
+    domain: vmpooler.example.com
+    dns_zone_resource_name: vmpooler-example-com
 :providers:
   :vsphere:
     server: "vcenter.domain.local"
@@ -71,6 +76,7 @@ describe 'Vmpooler::PoolManager::Provider::VSphere' do
     ready_ttl: 1440
     clone_target: 'cluster1'
     provider: 'vsphere'
+    dns_config: 'gcp-clouddns'
 EOT
     )
   }
@@ -535,7 +541,7 @@ EOT
       end
     end
 
-    context 'when VM exists but is missing information' do
+    context 'when VM exists but is missing hostname, boottime, powerstate' do
       let(:vm_object) { mock_RbVmomi_VIM_VirtualMachine({
           :name => vmname,
         })
@@ -560,10 +566,25 @@ EOT
       end
     end
 
+    context 'when VM exists but is missing ip' do
+      let(:vm_object) { mock_RbVmomi_VIM_VirtualMachine({
+          :name => vmname,
+          :ip => '',
+        })
+      }
+
+      it 'should return empty for ip' do
+        result = subject.get_vm(poolname,vmname)
+
+        expect(result['ip']).to eq('')
+      end
+    end
+
     context 'when VM exists and contains all information' do
       let(:vm_hostname) { "#{vmname}.demo.local" }
       let(:boot_time) { Time.now }
       let(:power_state) { 'MockPowerState' }
+      let(:ip) { '169.254.255.255' }
 
       let(:vm_object) { mock_RbVmomi_VIM_VirtualMachine({
           :name => vmname,
@@ -622,6 +643,11 @@ EOT
         expect(result['powerstate']).to eq(power_state)
       end
 
+      it 'should return the ip' do
+        result = subject.get_vm(poolname,vmname)
+
+        expect(result['ip']).to eq(ip)
+      end
     end
   end
 
@@ -1056,14 +1082,15 @@ EOT
   end
 
   describe '#vm_ready?' do
-    let(:domain) { nil }
+    let(:domain) { 'vmpooler.example.com' }
     context 'When a VM is ready' do
       before(:each) do
+        allow(subject).to receive(:domain).and_return('vmpooler.example.com')
         expect(subject).to receive(:open_socket).with(vmname, domain)
       end
 
       it 'should return true' do
-        expect(subject.vm_ready?(poolname,vmname)).to be true
+        expect(subject.vm_ready?(poolname, vmname)).to be true
       end
     end
 
@@ -1075,6 +1102,7 @@ EOT
       end
 
       it 'should return true' do
+        allow(subject).to receive(:domain).and_return('vmpooler.example.com')
         expect(subject.vm_ready?('missing_pool',vmname)).to be true
       end
     end
@@ -1390,7 +1418,7 @@ EOT
     let(:TCPSocket) { double('tcpsocket') }
     let(:socket) { double('tcpsocket') }
     let(:hostname) { 'host' }
-    let(:domain) { 'domain.local'}
+    let(:domain) { 'vmpooler.example.com' }
     let(:default_socket) { 22 }
 
     before do
