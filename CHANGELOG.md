@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.0.0) (2023-04-19)
+
+[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/2.1.0...3.0.0)
+
+**Breaking changes:**
+
+- \(RE-15124\) Collect VMs IP for use with DNS Plugins [\#29](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/29) ([yachub](https://github.com/yachub))
+
 ## [2.1.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/2.1.0) (2023-03-06)
 
 [Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/2.0.0...2.1.0)
