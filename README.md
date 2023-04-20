@@ -4,7 +4,6 @@
   - [Usage](#usage)
     - [Custom VM Config Attribute](#custom-vm-config-attribute)
   - [Update the Gemfile Lock](#update-the-gemfile-lock)
-  - [Submitting Issues](#submitting-issues)
   - [Releasing](#releasing)
   - [License](#license)
 
@@ -30,10 +29,6 @@ See the [VMware Tools Administration docs](https://docs.vmware.com/en/VMware-Too
 To update the `Gemfile.lock` run `./update-gemfile-lock`.
 
 Verify, and update if needed, that the docker tag in the script and GitHub action workflows matches what is used in the [vmpooler-deployment Dockerfile](https://github.com/puppetlabs/vmpooler-deployment/blob/main/docker/Dockerfile).
-
-## Submitting Issues
-
-Please file any issues or requests in Jira at <https://puppet.atlassian.net/jira/software/c/projects/POOLER/issues> where project development is tracked across all VMPooler related components.
 
 ## Releasing
 
