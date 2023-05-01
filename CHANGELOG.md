@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.1.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.1.0) (2023-05-01)
+
+[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/3.0.0...3.1.0)
+
+**Merged pull requests:**
+
+- Migrate issue management to Jira [\#34](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/34) ([yachub](https://github.com/yachub))
+- Bump jruby to 9.4.2.0 [\#33](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/33) ([yachub](https://github.com/yachub))
+
 ## [3.0.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.0.0) (2023-04-19)
 
 [Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/2.1.0...3.0.0)
