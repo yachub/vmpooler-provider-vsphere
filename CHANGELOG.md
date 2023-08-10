@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.2.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.2.0) (2023-08-10)
+
+[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/3.1.0...3.2.0)
+
+**Implemented enhancements:**
+
+- Bump jruby to 9.4.3.0 and update lockfile [\#40](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/40) ([yachub](https://github.com/yachub))
+
+**Merged pull requests:**
+
+- Bump thor from 1.2.1 to 1.2.2 [\#38](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/38) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump vmpooler from 3.0.0 to 3.1.0 [\#37](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/37) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Bump rack-test from 2.0.2 to 2.1.0 [\#36](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/36) ([dependabot[bot]](https://github.com/apps/dependabot))
+
 ## [3.1.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.1.0) (2023-05-01)
 
 [Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/3.0.0...3.1.0)
