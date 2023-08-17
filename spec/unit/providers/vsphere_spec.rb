@@ -1090,7 +1090,9 @@ EOT
       end
 
       it 'should return true' do
-        expect(subject.vm_ready?(poolname, vmname)).to be true
+        redis_connection_pool.with do |redis|
+          expect(subject.vm_ready?(poolname, vmname, redis)).to be true
+        end
       end
     end
 
@@ -1103,7 +1105,9 @@ EOT
 
       it 'should return true' do
         allow(subject).to receive(:domain).and_return('vmpooler.example.com')
-        expect(subject.vm_ready?('missing_pool',vmname)).to be true
+        redis_connection_pool.with do |redis|
+          expect(subject.vm_ready?('missing_pool', vmname, redis)).to be true
+        end
       end
     end
 
@@ -1115,7 +1119,9 @@ EOT
       end
 
       it 'should return false' do
-        expect(subject.vm_ready?(poolname,vmname)).to be false
+        redis_connection_pool.with do |redis|
+          expect(subject.vm_ready?(poolname, vmname, redis)).to be false
+        end
       end
     end
   end
