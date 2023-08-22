@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.1](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.3.1) (2023-08-22)
+
+[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/3.3.0...3.3.1)
+
+**Fixed bugs:**
+
+- \(RE-15710\) Fix IP address that is returned and increase timeout [\#44](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/44) ([yachub](https://github.com/yachub))
+
 ## [3.3.0](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.3.0) (2023-08-18)
 
 [Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/3.2.0...3.3.0)
