@@ -580,11 +580,41 @@ EOT
       end
     end
 
+    context 'when VM exists but contains a self assigned ip' do
+      let(:vm_object) { mock_RbVmomi_VIM_VirtualMachine({
+          :name => vmname,
+          :ip => '169.254.255.255',
+        })
+      }
+
+      it 'should return nil ip' do
+        allow(subject).to receive(:sleep)
+        result = subject.get_vm(poolname,vmname)
+
+        expect(result['ip']).to eq(nil)
+      end
+    end
+
+    context 'when VM exists but contains an invalid ip' do
+      let(:vm_object) { mock_RbVmomi_VIM_VirtualMachine({
+          :name => vmname,
+          :ip => '0.0.0.0',
+        })
+      }
+
+      it 'should return nil for ip' do
+        allow(subject).to receive(:sleep)
+        result = subject.get_vm(poolname,vmname)
+
+        expect(result['ip']).to eq(nil)
+      end
+    end
+
     context 'when VM exists and contains all information' do
       let(:vm_hostname) { "#{vmname}.demo.local" }
       let(:boot_time) { Time.now }
       let(:power_state) { 'MockPowerState' }
-      let(:ip) { '169.254.255.255' }
+      let(:ip) { '192.168.0.2' }
 
       let(:vm_object) { mock_RbVmomi_VIM_VirtualMachine({
           :name => vmname,
