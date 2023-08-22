@@ -818,7 +818,7 @@ end
 def mock_RbVmomi_VIM_VirtualMachine(options = {})
   options[:snapshot_tree] = nil if options[:snapshot_tree].nil?
   options[:name] = 'VM' + rand(65536).to_s if options[:name].nil?
-  options[:ip] = '169.254.255.255' if options[:ip].nil?
+  options[:ip] = '192.168.0.2' if options[:ip].nil?
   options[:path] = [] if options[:path].nil?
 
   mock = MockVirtualMachine.new()

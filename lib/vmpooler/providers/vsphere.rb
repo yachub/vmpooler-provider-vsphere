@@ -603,9 +603,11 @@ module Vmpooler
           ip_loop_delay = 1
           ip_loop_count = 1
           ip = nil
+          invalid_addresses = /(0|169)\.(0|254)\.\d+\.\d+/
           while ip.nil?
             sleep(ip_loop_delay)
             ip = vm_object.guest_ip
+            ip = nil if !ip.nil? && ip.match?(invalid_addresses)
             unless ip_maxloop == 0
               break if ip_loop_count >= ip_maxloop
 
