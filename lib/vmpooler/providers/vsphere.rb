@@ -68,14 +68,14 @@ module Vmpooler
           try = 0 if try.nil?
           max_tries = 3
           @redis.with_metrics do |redis|
-            redis.multi
-            redis.srem("vmpooler__completed__#{pool}", vm_name)
-            redis.hdel("vmpooler__active__#{pool}", vm_name)
-            redis.hset("vmpooler__vm__#{vm_name}", 'destroy', Time.now)
+            redis.multi do |transaction|
+              transaction.srem("vmpooler__completed__#{pool}", vm_name)
+              transaction.hdel("vmpooler__active__#{pool}", vm_name)
+              transaction.hset("vmpooler__vm__#{vm_name}", 'destroy', Time.now)
 
-            # Auto-expire metadata key
-            redis.expire("vmpooler__vm__#{vm_name}", (data_ttl * 60 * 60))
-            redis.exec
+              # Auto-expire metadata key
+              transaction.expire("vmpooler__vm__#{vm_name}", (data_ttl * 60 * 60))
+            end
           end
 
           start = Time.now
@@ -1137,10 +1137,10 @@ module Vmpooler
           target_host_object = find_host_by_dnsname(connection, target_host_name)
           finish = migrate_vm_and_record_timing(pool_name, vm_name, vm_hash, target_host_object, target_host_name)
           @redis.with_metrics do |redis|
-            redis.multi
-            redis.hset("vmpooler__vm__#{vm_name}", 'host', target_host_name)
-            redis.hset("vmpooler__vm__#{vm_name}", 'migrated', true)
-            redis.exec
+            redis.multi do |transaction|
+              transaction.hset("vmpooler__vm__#{vm_name}", 'host', target_host_name)
+              transaction.hset("vmpooler__vm__#{vm_name}", 'migrated', true)
+            end
           end
           logger.log('s', "[>] [#{pool_name}] '#{vm_name}' migrated from #{vm_hash['host_name']} to #{target_host_name} in #{finish} seconds")
         ensure
@@ -1158,10 +1158,10 @@ module Vmpooler
           metrics.increment("migrate_to.#{dest_host_name}")
           @redis.with_metrics do |redis|
             checkout_to_migration = format('%<time>.2f', time: Time.now - Time.parse(redis.hget("vmpooler__vm__#{vm_name}", 'checkout')))
-            redis.multi
-            redis.hset("vmpooler__vm__#{vm_name}", 'migration_time', finish)
-            redis.hset("vmpooler__vm__#{vm_name}", 'checkout_to_migration', checkout_to_migration)
-            redis.exec
+            redis.multi do |transaction|
+              transaction.hset("vmpooler__vm__#{vm_name}", 'migration_time', finish)
+              transaction.hset("vmpooler__vm__#{vm_name}", 'checkout_to_migration', checkout_to_migration)
+            end
           end
           finish
         end
