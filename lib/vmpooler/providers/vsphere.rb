@@ -71,7 +71,7 @@ module Vmpooler
             redis.multi do |transaction|
               transaction.srem("vmpooler__completed__#{pool}", vm_name)
               transaction.hdel("vmpooler__active__#{pool}", vm_name)
-              transaction.hset("vmpooler__vm__#{vm_name}", 'destroy', Time.now)
+              transaction.hset("vmpooler__vm__#{vm_name}", 'destroy', Time.now.to_s)
 
               # Auto-expire metadata key
               transaction.expire("vmpooler__vm__#{vm_name}", (data_ttl * 60 * 60))
@@ -1139,7 +1139,7 @@ module Vmpooler
           @redis.with_metrics do |redis|
             redis.multi do |transaction|
               transaction.hset("vmpooler__vm__#{vm_name}", 'host', target_host_name)
-              transaction.hset("vmpooler__vm__#{vm_name}", 'migrated', true)
+              transaction.hset("vmpooler__vm__#{vm_name}", 'migrated', 'true')
             end
           end
           logger.log('s', "[>] [#{pool_name}] '#{vm_name}' migrated from #{vm_hash['host_name']} to #{target_host_name} in #{finish} seconds")
