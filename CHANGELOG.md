@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.4](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.3.4) (2023-08-30)
+
+[Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/3.3.3...3.3.4)
+
+**Fixed bugs:**
+
+- \(maint\) Convert booleans and Time objects to strings when being added to redis [\#51](https://github.com/puppetlabs/vmpooler-provider-vsphere/pull/51) ([isaac-hammes](https://github.com/isaac-hammes))
+
 ## [3.3.3](https://github.com/puppetlabs/vmpooler-provider-vsphere/tree/3.3.3) (2023-08-28)
 
 [Full Changelog](https://github.com/puppetlabs/vmpooler-provider-vsphere/compare/3.3.2...3.3.3)
