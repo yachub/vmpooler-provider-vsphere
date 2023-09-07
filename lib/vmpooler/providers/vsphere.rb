@@ -1103,6 +1103,9 @@ module Vmpooler
             begin
               connection = ensured_vsphere_connection(pool_object)
               vm_hash = get_vm_details(pool_name, vm_name, connection)
+
+              raise StandardError, 'failed to get vm details. vm is unreachable or no longer exists' if vm_hash.nil?
+
               @redis.with_metrics do |redis|
                 redis.hset("vmpooler__vm__#{vm_name}", 'host', vm_hash['host_name'])
                 migration_count = redis.scard('vmpooler__migration')
