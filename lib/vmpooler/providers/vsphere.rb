@@ -394,12 +394,13 @@ module Vmpooler
 
         # The inner method requires vmware tools running in the guest os
         def get_vm_ip_address(vm_name, pool_name)
-          @connection_pool.with_metrics do |pool_object|
-            connection = ensured_vsphere_connection(pool_object)
-            vm_object = find_vm(pool_name, vm_name, connection)
-            vm_hash = generate_vm_hash(vm_object, pool_name)
-            return vm_hash['ip']
-          end
+          # @connection_pool.with_metrics do |pool_object|
+          #   connection = ensured_vsphere_connection(pool_object)
+          #   vm_object = find_vm(pool_name, vm_name, connection)
+          #   vm_hash = generate_vm_hash(vm_object, pool_name)
+          #   return vm_hash['ip']
+          # end
+          return '0.0.0.0'
         end
 
         def create_config_spec(vm_name, template_name, extra_config)
